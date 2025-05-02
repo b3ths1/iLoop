@@ -1,0 +1,127 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    background-color: #f5f5f7;
+    color: #111;
+  }
+  
+  #app {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+  
+  #logo {
+    display: block;
+    max-width: 180px;
+    margin: 0 auto 20px;
+  }
+  
+  #uploadSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  /* Upload button styling */
+  .file-upload-btn {
+    display: inline-block;
+    background-color: #007aff;
+    color: white;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .file-upload-btn:hover {
+    background-color: #0051c6;
+    transform: scale(1.05);
+  }
+  
+  #fileInput {
+    display: none;
+  }
+  
+  #fileLabel {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  #filters {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  
+  select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #fff;
+  }
+  
+  #timeSliderContainer {
+    margin-bottom: 20px;
+  }
+  
+  #timeSlider {
+    width: 100%;
+  }
+  
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  #preview {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  #mainImage {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+  
+  .image-date {
+    margin: 10px 0;
+    color: #888;
+    font-size: 0.95rem;
+  }
+  
+  
+  #thumbnailGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+  }
+  
+  #thumbnailGrid img {
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  #thumbnailGrid img:hover {
+    transform: scale(1.05);
+  }
+  
+  
