@@ -5,7 +5,8 @@ const daySelect = document.getElementById("daySelect");
 const timeSlider = document.getElementById("timeSlider");
 const timeLabel = document.getElementById("timeLabel");
 const mainImage = document.getElementById("mainImage");
-const imageDate = document.getElementById("imageDate");
+const imageDateTop = document.getElementById("imageDateTop");
+const imageDateBottom = document.getElementById("imageDateBottom");
 const thumbnailGrid = document.getElementById("thumbnailGrid");
 
 let images = [];
@@ -60,7 +61,7 @@ function handleFiles(e) {
 
 function populateYearMonthOptions() {
   const years = [...new Set(images.map((i) => i.date.getFullYear()))].sort();
-  const months = [...Array(12).keys()].map((m) => m + 1);
+  const months = [...new Set(images.map((i) => i.date.getMonth() + 1))].sort();
 
   yearSelect.innerHTML = '<option value="all">All</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
   monthSelect.innerHTML = '<option value="all">All</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
@@ -95,12 +96,14 @@ function filterAndRender() {
   });
 
   filteredImages.sort((a, b) => a.date - b.date);
+
   renderThumbnails();
   if (filteredImages.length) {
     updatePreview(0);
   } else {
     mainImage.src = "";
-    imageDate.textContent = "No images match the filters.";
+    imageDateTop.textContent = "";
+    imageDateBottom.textContent = "No images match the filters.";
   }
 }
 
@@ -119,7 +122,10 @@ function updatePreview(index) {
   const img = filteredImages[index];
   if (!img) return;
   mainImage.src = img.url;
-  imageDate.textContent = img.date.toLocaleString();
+
+  const dateString = img.date.toLocaleString();
+  imageDateTop.textContent = dateString;
+  imageDateBottom.textContent = dateString;
 
   const minutes = img.date.getHours() * 60 + img.date.getMinutes();
   timeSlider.value = minutes;

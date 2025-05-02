@@ -8,21 +8,53 @@ body {
   #app {
     max-width: 800px;
     margin: 40px auto;
-    padding: 20px;
+    padding: 30px;
     background: white;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    text-align: center;
   }
   
-  h1 {
-    text-align: center;
-    font-size: 2rem;
+  #logo {
+    display: block;
+    max-width: 180px;
+    margin: 0 auto 20px;
+  }
+  
+  #uploadSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 20px;
   }
   
-  input[type="file"] {
-    display: block;
-    margin: 0 auto 20px;
+  /* Upload button styling */
+  .file-upload-btn {
+    display: inline-block;
+    background-color: #007aff;
+    color: white;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .file-upload-btn:hover {
+    background-color: #0051c6;
+    transform: scale(1.05);
+  }
+  
+  #fileInput {
+    display: none;
+  }
+  
+  #fileLabel {
+    font-size: 0.9rem;
+    color: #555;
   }
   
   #filters {
@@ -42,7 +74,6 @@ body {
   }
   
   #timeSliderContainer {
-    text-align: center;
     margin-bottom: 20px;
   }
   
@@ -50,10 +81,12 @@ body {
     width: 100%;
   }
   
-  #timeLabel {
-    margin-top: 5px;
-    font-size: 0.95rem;
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
     color: #555;
+    margin-bottom: 5px;
   }
   
   #preview {
@@ -67,10 +100,12 @@ body {
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   }
   
-  #imageDate {
-    margin-top: 10px;
+  .image-date {
+    margin: 10px 0;
     color: #888;
+    font-size: 0.95rem;
   }
+  
   
   #thumbnailGrid {
     display: grid;
@@ -88,4 +123,5 @@ body {
   #thumbnailGrid img:hover {
     transform: scale(1.05);
   }
+  
   

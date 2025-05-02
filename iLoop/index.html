@@ -9,8 +9,13 @@
 </head>
 <body>
   <div id="app">
-    <h1>iLoop</h1>
-    <input type="file" id="fileInput" multiple accept="image/*"/>
+    <img src="iLoopLogo.png" alt="iLoop Logo" id="logo" />
+
+    <div id="uploadSection">
+      <label for="fileInput" class="file-upload-btn">Upload</label>
+      <input type="file" id="fileInput" multiple accept="image/*" />
+      <span id="fileLabel">No file chosen</span>
+    </div>
 
     <div id="filters">
       <label>Year:</label>
@@ -24,14 +29,17 @@
     </div>
 
     <div id="timeSliderContainer">
+      <div class="slider-labels">
+        <span>0:00</span>
+        <span>23:59</span>
+      </div>
       <input type="range" id="timeSlider" min="0" max="1440" step="1" value="0" />
-      <div id="timeLabel">00:00</div>
     </div>
 
     <div id="preview">
+      <div id="imageDateTop" class="image-date"></div>
       <img id="mainImage" src="" alt="Preview will appear here" />
-      <div id="imageDate"></div>
-    </div>
+    </div>    
 
     <div id="thumbnailGrid"></div>
   </div>
