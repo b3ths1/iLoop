@@ -3,7 +3,7 @@ const yearSelect = document.getElementById("yearSelect");
 const monthSelect = document.getElementById("monthSelect");
 const daySelect = document.getElementById("daySelect");
 const timeSlider = document.getElementById("timeSlider");
-const timeLabel = document.getElementById("timeLabel");
+const timeDisplay = document.getElementById("timeDisplay");
 const mainImage = document.getElementById("mainImage");
 const imageDateTop = document.getElementById("imageDateTop");
 const imageDateBottom = document.getElementById("imageDateBottom");
@@ -22,8 +22,11 @@ monthSelect.addEventListener("change", () => {
   filterAndRender();
 });
 daySelect.addEventListener("change", filterAndRender);
+
 timeSlider.addEventListener("input", () => {
-  const index = findClosestImageByTime(timeSlider.value);
+  const value = parseInt(timeSlider.value, 10);
+  timeDisplay.textContent = `Time: ${formatTime(value)}`;
+  const index = findClosestImageByTime(value);
   updatePreview(index);
 });
 
@@ -63,29 +66,27 @@ function populateYearMonthOptions() {
   const years = [...new Set(images.map((i) => i.date.getFullYear()))].sort();
   const months = [...new Set(images.map((i) => i.date.getMonth() + 1))].sort();
 
-  yearSelect.innerHTML = '<option value="all">All</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-  monthSelect.innerHTML = '<option value="all">All</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
+  yearSelect.innerHTML = '<option value="none">None</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+  monthSelect.innerHTML = '<option value="none">None</option>' + months.map(m => `<option value="${m}">${m}</option>`).join('');
 }
 
 function updateDayOptions() {
-    const year = yearSelect.value;
-    const month = monthSelect.value;
-  
-    let relevantImages = images;
-  
-    if (year !== "all") {
-      relevantImages = relevantImages.filter(img => img.date.getFullYear().toString() === year);
-    }
-  
-    if (month !== "all") {
-      relevantImages = relevantImages.filter(img => (img.date.getMonth() + 1).toString() === month);
-    }
-  
-    const days = [...new Set(relevantImages.map(i => i.date.getDate()))].sort((a, b) => a - b);
-  
-    daySelect.innerHTML = `<option value="all">All</option>` + days.map(d => `<option value="${d}">${d}</option>`).join('');
+  const year = yearSelect.value;
+  const month = monthSelect.value;
+
+  let relevantImages = images;
+
+  if (year !== "none") {
+    relevantImages = relevantImages.filter(img => img.date.getFullYear().toString() === year);
   }
-  
+
+  if (month !== "none") {
+    relevantImages = relevantImages.filter(img => (img.date.getMonth() + 1).toString() === month);
+  }
+
+  const days = [...new Set(relevantImages.map(i => i.date.getDate()))].sort((a, b) => a - b);
+  daySelect.innerHTML = `<option value="none">None</option>` + days.map(d => `<option value="${d}">${d}</option>`).join('');
+}
 
 function filterAndRender() {
   const y = yearSelect.value;
@@ -94,9 +95,9 @@ function filterAndRender() {
 
   filteredImages = images.filter((img) => {
     const date = img.date;
-    const matchY = y === "all" || date.getFullYear().toString() === y;
-    const matchM = m === "all" || (date.getMonth() + 1).toString() === m;
-    const matchD = d === "all" || date.getDate().toString() === d;
+    const matchY = y === "none" || date.getFullYear().toString() === y;
+    const matchM = m === "none" || (date.getMonth() + 1).toString() === m;
+    const matchD = d === "none" || date.getDate().toString() === d;
     return matchY && matchM && matchD;
   });
 
@@ -107,13 +108,14 @@ function filterAndRender() {
     const firstImg = filteredImages[0];
     const firstTimeMinutes = firstImg.date.getHours() * 60 + firstImg.date.getMinutes();
     timeSlider.value = firstTimeMinutes;
+    timeDisplay.textContent = `Time: ${formatTime(firstTimeMinutes)}`;
     updatePreview(0);
   } else {
     mainImage.src = "";
     imageDateTop.textContent = "";
     imageDateBottom.textContent = "No images match the filters.";
+    timeDisplay.textContent = "Time: 00:00";
   }
-  
 }
 
 function renderThumbnails() {
@@ -138,7 +140,7 @@ function updatePreview(index) {
 
   const minutes = img.date.getHours() * 60 + img.date.getMinutes();
   timeSlider.value = minutes;
-  timeLabel.textContent = formatTime(minutes);
+  timeDisplay.textContent = `Time: ${formatTime(minutes)}`;
 }
 
 function findClosestImageByTime(minuteValue) {

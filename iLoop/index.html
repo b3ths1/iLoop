@@ -19,21 +19,22 @@
 
     <div id="filters">
       <label>Year:</label>
-      <select id="yearSelect"><option value="all">All</option></select>
+      <select id="yearSelect"><option value="none">None</option></select>
 
       <label>Month:</label>
-      <select id="monthSelect"><option value="all">All</option></select>
+      <select id="monthSelect"><option value="none">None</option></select>
 
       <label>Day:</label>
-      <select id="daySelect"><option value="all">All</option></select>
+      <select id="daySelect"><option value="none">None</option></select>
     </div>
 
     <div id="timeSliderContainer">
+      <div id="timeDisplay">Time: 00:00</div>
       <div class="slider-labels">
         <span>0:00</span>
         <span>23:59</span>
       </div>
-      <input type="range" id="timeSlider" min="0" max="1440" step="1" value="0" />
+      <input type="range" id="timeSlider" min="0" max="1439" step="1" value="0" />
     </div>
 
     <div id="preview">
