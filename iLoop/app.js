@@ -68,19 +68,24 @@ function populateYearMonthOptions() {
 }
 
 function updateDayOptions() {
-  const year = yearSelect.value;
-  const month = monthSelect.value;
-  let daysInMonth = 31;
-
-  if (year !== "all" && month !== "all") {
-    daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+  
+    let relevantImages = images;
+  
+    if (year !== "all") {
+      relevantImages = relevantImages.filter(img => img.date.getFullYear().toString() === year);
+    }
+  
+    if (month !== "all") {
+      relevantImages = relevantImages.filter(img => (img.date.getMonth() + 1).toString() === month);
+    }
+  
+    const days = [...new Set(relevantImages.map(i => i.date.getDate()))].sort((a, b) => a - b);
+  
+    daySelect.innerHTML = `<option value="all">All</option>` + days.map(d => `<option value="${d}">${d}</option>`).join('');
   }
-
-  daySelect.innerHTML = `<option value="all">All</option>`;
-  for (let d = 1; d <= daysInMonth; d++) {
-    daySelect.innerHTML += `<option value="${d}">${d}</option>`;
-  }
-}
+  
 
 function filterAndRender() {
   const y = yearSelect.value;
