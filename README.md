@@ -1,22 +1,22 @@
 # iLoop
 
-**iLoop** is a minimalist, Apple-style web app designed for managing and visualizing photos captured every minute of every day. It allows users to upload images, then filter and browse them by **year, month, day**, and a **24-hour time slider** based on embedded EXIF metadata.
+**iLoop** is a minimalist web app that helps you organize and explore photos taken at any given time of day. With iLoop, you can upload multiple images, filter them by **year, month, day**, and even browse them based on a **24-hour time slider** using the embedded **EXIF metadata**.
 
 ---
 
-## Features
+## Key Features
 
-- Upload multiple photos from your device.
-- Filter images by **Year**, **Month**, and **Day**.
-- Use a **time slider** (00:00 – 23:59) to browse by exact capture time.
-- Reads and parses **EXIF metadata** (`DateTimeOriginal`) to extract timestamps.
-- Interactive thumbnail grid with image preview and delete option.
-- Clean and responsive Apple-like user interface.
-- Lightweight, no backend required — runs fully in the browser.
+* **Multiple Photo Upload**: Easily upload several images from your device.
+* **Date Filtering**: Sort your images by **Year**, **Month**, and **Day**.
+* **Time Slider**: Browse images by specific time of day (from **00:00** to **23:59**).
+* **EXIF Metadata Parsing**: Automatically reads `DateTimeOriginal` from EXIF data to extract accurate timestamps.
+* **Interactive Thumbnails**: View images in an interactive grid with hover previews and delete options.
+* **Clean User Interface**: Enjoy a sleek, responsive design inspired by Apple’s aesthetic.
+* **No Backend Required**: The app runs entirely in the browser, making it lightweight and fast.
 
 ---
 
-## Technologies Used
+## Technologies
 
-- **HTML5, CSS3, JavaScript**
-- [EXIF.js](https://github.com/exif-js/exif-js) – To read metadata from images
+* **HTML5**, **CSS3**, **JavaScript** – For frontend development.
+* [**EXIF.js**](https://github.com/exif-js/exif-js) – A JavaScript library for reading EXIF metadata from images.
