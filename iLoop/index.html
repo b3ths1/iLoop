@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>iLoop</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    #container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 0 5px 20px 5px;
+      font-size: 1rem;
+      background: #fff;
+      color: #333;
+    }
+
+    #filterContainer {
+      text-align: center;
+    }
+
+    #sliderContainer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    #labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    #preview {
+      text-align: center;
+    }
+
+    #preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+    }
+
+    #date {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    #thumbNav {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    #thumbNav button {
+      padding: 6px 12px;
+      border: none;
+      background: #eee;
+      border-radius: 6px;
+      margin: 0 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #thumbNav button:hover {
+      background: #ddd;
+    }
+
+    #thumbnailGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+
+    .thumb {
+      position: relative;
+    }
+
+    .thumb img {
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+
+    .thumb button {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>iLoop</h1>
+    <input type="file" id="fileInput" multiple accept="image/*">
+    
+    <div id="filterContainer">
+      <label>Year:</label>
+      <select id="yearSelect"><option value="all">All</option></select>
+      <label>Month:</label>
+      <select id="monthSelect"><option value="all">All</option></select>
+      <label>Day:</label>
+      <select id="daySelect"><option value="all">All</option></select>
+    </div>
+
+    <div id="sliderContainer">
+      <input type="range" id="slider" min="0" max="1439" value="0">
+      <div id="labels">
+        <span id="labelMin">00:00</span>
+        <span id="labelMax">23:59</span>
+      </div>
+    </div>
+
+    <div id="preview">
+      <img id="mainImage" src="" alt="No image">
+      <div id="date"></div>
+    </div>
+
+    <div id="thumbNav">
+      <button id="prevPage">‹ Prev</button>
+      <button id="nextPage">Next ›</button>
+    </div>
+
+    <div id="thumbnailGrid"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput'),
+      yearSelect = document.getElementById('yearSelect'),
+      monthSelect = document.getElementById('monthSelect'),
+      daySelect = document.getElementById('daySelect'),
+      slider = document.getElementById('slider'),
+      mainImage = document.getElementById('mainImage'),
+      dateDiv = document.getElementById('date'),
+      labelMin = document.getElementById('labelMin'),
+      labelMax = document.getElementById('labelMax'),
+      thumbnailGrid = document.getElementById('thumbnailGrid'),
+      prevPageBtn = document.getElementById('prevPage'),
+      nextPageBtn = document.getElementById('nextPage');
+
+    let images = [], filtered = [], currentPage = 0, itemsPerPage = 16, nextId = 0;
+
+    function timeToLabel(minute) {
+      const h = String(Math.floor(minute / 60)).padStart(2, '0');
+      const m = String(minute % 60).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    fileInput.addEventListener('change', e => {
+      const files = Array.from(e.target.files); let loaded = 0;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const url = ev.target.result, img = new Image();
+          img.onload = () => {
+            EXIF.getData(img, function () {
+              let dt = EXIF.getTag(this, 'DateTimeOriginal');
+              if (!dt) {
+                const d = new Date(file.lastModified);
+                dt = d.toISOString().slice(0, 16);
+              } else {
+                const match = dt.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})/);
+                if (match) dt = `${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}`;
+              }
+              const d = new Date(dt);
+              const minuteOfDay = d.getHours() * 60 + d.getMinutes();
+              images.push({ id: nextId++, url, date: dt, minuteOfDay });
+              loaded++;
+              if (loaded === files.length) {
+                populateYearOptions();
+                applyFilter();
+              }
+            });
+          };
+          img.src = url;
+        };
+        reader.readAsDataURL(file);
+      });
+      fileInput.value = '';
+    });
+
+    function populateYearOptions() {
+      const years = [...new Set(images.map(i => new Date(i.date).getFullYear()))].sort();
+      yearSelect.innerHTML = '<option value="all">All</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+    }
+
+    [yearSelect, monthSelect, daySelect].forEach(el => {
+      el.addEventListener('change', () => {
+        currentPage = 0;
+        applyFilter();
+      });
+    });
+
+    slider.addEventListener('input', () => {
+      if (!filtered.length) return;
+      const minute = parseInt(slider.value);
+      let closest = filtered.reduce((a, b) =>
+        Math.abs(a.minuteOfDay - minute) < Math.abs(b.minuteOfDay - minute) ? a : b
+      );
+      updatePreview(closest);
+    });
+
+    prevPageBtn.addEventListener('click', () => changePage(-1));
+    nextPageBtn.addEventListener('click', () => changePage(1));
+
+    function applyFilter() {
+      filtered = images.filter(i => {
+        const d = new Date(i.date);
+        return (yearSelect.value === 'all' || d.getFullYear() == +yearSelect.value) &&
+               (monthSelect.value === 'all' || d.getMonth() + 1 == +monthSelect.value) &&
+               (daySelect.value === 'all' || d.getDate() == +daySelect.value);
+      });
+
+      filtered.sort((a, b) => a.minuteOfDay - b.minuteOfDay);
+      setupSlider();
+      renderThumbnails();
+    }
+
+    function setupSlider() {
+      if (!filtered.length) {
+        mainImage.src = '';
+        dateDiv.textContent = 'No images.';
+        return;
+      }
+      slider.value = filtered[0].minuteOfDay;
+      labelMin.textContent = '00:00';
+      labelMax.textContent = '23:59';
+      updatePreview(filtered[0]);
+    }
+
+    function updatePreview(img) {
+      mainImage.src = img.url;
+      dateDiv.textContent = img.date.replace('T', ' ');
+    }
+
+    function changePage(delta) {
+      const totalPages = Math.ceil(filtered.length / itemsPerPage);
+      currentPage = Math.min(Math.max(currentPage + delta, 0), totalPages - 1);
+      renderThumbnails();
+    }
+
+    function renderThumbnails() {
+      thumbnailGrid.innerHTML = '';
+      const start = currentPage * itemsPerPage;
+      const pageItems = filtered.slice(start, start + itemsPerPage);
+
+      pageItems.forEach((img, idx) => {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+
+        const t = document.createElement('img');
+        t.src = img.url;
+        t.title = img.date;
+        t.addEventListener('click', () => updatePreview(img));
+
+        const btn = document.createElement('button');
+        btn.textContent = '×';
+        btn.addEventListener('click', () => {
+          images = images.filter(i => i.id !== img.id);
+          applyFilter();
+        });
+
+        div.appendChild(t);
+        div.appendChild(btn);
+        thumbnailGrid.appendChild(div);
+      });
+
+      const totalPages = Math.ceil(filtered.length / itemsPerPage);
+      prevPageBtn.disabled = currentPage === 0;
+      nextPageBtn.disabled = currentPage >= totalPages - 1;
+    }
+  </script>
+</body>
+</html>
