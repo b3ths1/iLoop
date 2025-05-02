@@ -99,12 +99,16 @@ function filterAndRender() {
 
   renderThumbnails();
   if (filteredImages.length) {
+    const firstImg = filteredImages[0];
+    const firstTimeMinutes = firstImg.date.getHours() * 60 + firstImg.date.getMinutes();
+    timeSlider.value = firstTimeMinutes;
     updatePreview(0);
   } else {
     mainImage.src = "";
     imageDateTop.textContent = "";
     imageDateBottom.textContent = "No images match the filters.";
   }
+  
 }
 
 function renderThumbnails() {
