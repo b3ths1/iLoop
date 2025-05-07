@@ -1,0 +1,228 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f7;
+  color: #111;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Main container with fixed max-width */
+#app {
+  max-width: 960px;
+  width: 100%;
+  margin-top: 10px; /* Reduced from 40px or 30px */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+  transform: scale(0.9); /* Optional: adjust or remove for size preference */
+}
+
+/* Move logo to top-left */
+#logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  max-width: 120px;
+}
+
+/* Upload Section */
+#uploadSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.file-upload-btn {
+  display: inline-block;
+  background-color: #007aff;
+  color: white;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.file-upload-btn:hover {
+  background-color: #0051c6;
+  transform: scale(1.05);
+}
+
+#fileInput {
+  display: none;
+}
+
+#fileLabel {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Filters Section */
+#filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: #fff;
+  max-width: 120px;
+  width: 100%;
+}
+
+#timeSlider {
+  width: 100%;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Time Display */
+#timeDisplay {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #007BFF;
+}
+
+/* Image Preview Section */
+#preview {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#mainImage {
+  max-width: 500px; /* smaller preview */
+  height: auto;
+  max-height: 600px; /* smaller preview */
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+}
+
+.image-date {
+  color: #888;
+  font-size: 0.95rem;
+}
+
+/* Thumbnails Grid */
+#thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* smaller thumbnails */
+  gap: 10px;
+  justify-items: center;
+}
+
+#thumbnailGrid img {
+  width: 80px;
+  height: auto;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  object-fit: cover;
+}
+
+#thumbnailGrid img:hover {
+  transform: scale(1.05);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  #app {
+    margin-top: 30px;
+    padding: 15px;
+    transform: scale(0.8); /* Scale down more for smaller screens */
+  }
+
+  #logo {
+    max-width: 100px;
+  }
+
+  .file-upload-btn {
+    font-size: 1rem;
+  }
+
+  #filters {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  select {
+    font-size: 0.9rem;
+    max-width: 250px;
+  }
+
+  #thumbnailGrid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  #app {
+    margin-top: 20px;
+    padding: 10px;
+    transform: scale(0.7); /* Further scaling down for mobile */
+  }
+
+  #logo {
+    max-width: 80px;
+  }
+
+  .file-upload-btn {
+    font-size: 0.9rem;
+    padding: 6px 14px;
+  }
+
+  #filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  select {
+    font-size: 0.85rem;
+    max-width: 220px;
+  }
+
+  #thumbnailGrid {
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  }
+
+  .slider-labels {
+    font-size: 0.85rem;
+  }
+
+  .image-date {
+    font-size: 0.85rem;
+  }
+}
