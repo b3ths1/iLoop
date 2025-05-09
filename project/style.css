@@ -31,7 +31,7 @@ body {
   flex-direction: column;
   gap: 5px;
   overflow: hidden;
-  position: relative; /* Added this to allow positioning relative to the app container */
+  position: relative;
 }
 
 #logo {
@@ -51,14 +51,13 @@ body {
 
 #mainContent {
   flex: 1;
-  max-width: 100%; /* Changed from calc(100% - 340px) */
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
   padding-right: 10px;
 }
-
 
 #uploadSection {
   display: flex;
@@ -138,7 +137,7 @@ select {
 
 #mainImage {
   max-width: 100%;
-  max-height: 440px;
+  max-height: 500px;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   object-fit: contain;
@@ -150,4 +149,42 @@ select {
   margin-bottom: 4px;
 }
 
+:root{
+  --accent-blue:#007aff;   /* iOS‑style blue – use #007BFF if you prefer */
+}
 
+/* --------------------------------------------------------------- */
+/* Filters strip: labels & dropdowns                               */
+/* --------------------------------------------------------------- */
+
+#filters label{
+  font-size:.9rem;
+  font-weight:600;
+  color:var(--accent-blue);
+}
+
+/* dropdowns */
+#filters select{
+  padding:6px 28px 6px 10px;              /* room for the arrow */
+  font-size:.9rem;
+  border-radius:6px;
+  border:2px solid var(--accent-blue);
+  color:var(--accent-blue);
+  background:
+    #ffffff                                           
+    url('data:image/svg+xml;utf8,\
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+           <path fill="%23007aff" d="M7 10l5 5 5-5z"/></svg>')  /* arrow */
+    no-repeat right 8px center / 14px auto;
+  appearance:none;                       /* hide default arrow (Chrome/Edge) */
+  -moz-appearance:none;                  /* Firefox */
+  -webkit-appearance:none;               /* Safari */
+  cursor:pointer;
+  transition:background-color .2s, border-color .2s, box-shadow .2s;
+}
+
+
+#filters select:focus{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(0,122,255,.3);
+}

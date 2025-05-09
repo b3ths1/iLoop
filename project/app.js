@@ -11,10 +11,14 @@ const imageDate   = document.getElementById('imageDateTop');
 const cache   = new Map();   // iso‑date → array of image records
 let available = [];          // list of iso‑date strings (YYYY‑MM‑DD)
 
+const defaultPreview = 'preview.png';          // <-- your default thumbnail
+mainImage.src = defaultPreview;
+
 /* ─── helpers ────────────────────────────────────────────── */
 const pad  = n => String(n).padStart(2, '0');
 const iso  = (y, m, d) => `${y}-${m}-${d}`;
-const fmtT = mins => `${pad(mins / 60 | 0)}:${pad(mins % 60)}`;
+// show hours without a leading zero: 0:00, 7:05, 12:30 …
+const fmtT = mins => `${(mins / 60) | 0}:${pad(mins % 60)}`;
 
 function populate(select, vals) {
   select.innerHTML = '<option value="none">–</option>';
@@ -24,6 +28,7 @@ function populate(select, vals) {
     select.appendChild(o);
   });
 }
+
 /* ─── load master list then build YY/MM/DD dropdowns ─────── */
 fetch('/daily_json/dates.json')
   .then(r => r.json())
@@ -77,23 +82,27 @@ function render() {
         d = daySelect.value,
         t = +timeSlider.value;
 
+  // No full date selected → show default preview
   if ([y, m, d].includes('none')) {
-    mainImage.src = ''; imageDate.textContent = ''; return;
+    mainImage.src = defaultPreview;
+    imageDate && (imageDate.textContent = '');
+    timeDisplay.textContent = `Time: ${fmtT(t)}`;
+    return;
   }
 
   loadDay(y, m, d).then(imgs => {
     if (!imgs.length) return;
 
-    const exact = imgs.filter(i => i.timeMinutes === t);
+    const exact  = imgs.filter(i => i.timeMinutes === t);
     const chosen = exact.length
       ? exact[0]
       : imgs.reduce((a, b) =>
           Math.abs(a.timeMinutes - t) < Math.abs(b.timeMinutes - t) ? a : b);
 
     mainImage.src = chosen.url;
-    imageDate.textContent =
+    imageDate && (imageDate.textContent =
       `${chosen.year}-${chosen.month}-${chosen.day}  ` +
-      `${chosen.hour}:${chosen.minute}`;
+      `${chosen.hour}:${chosen.minute}`);
   });
 
   timeDisplay.textContent = `Time: ${fmtT(t)}`;
@@ -105,6 +114,9 @@ function render() {
 timeSlider.addEventListener('input', render);
 
 /* ─── initial UI state ───────────────────────────────────── */
-timeSlider.max  = 1439;
-timeSlider.value = 720;
-timeDisplay.textContent = `Time: ${fmtT(720)}`;
+timeSlider.max  = 1439;      // 24 h × 60 m ‑ 1
+timeSlider.value = 0;        // begin at the far‑left
+timeDisplay.textContent = `Time: ${fmtT(0)}`;
+
+/* optional: draw the initial preview */
+render();
