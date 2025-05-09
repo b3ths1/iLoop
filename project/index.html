@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>iLoop - Timeline Filter</title>
+  <title>iLoop – Timeline Filter</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -15,11 +15,6 @@
 
     <div id="contentWrapper">
       <div id="mainContent">
-        <div id="uploadSection">
-          <label for="fileInput" class="file-upload-btn">Upload</label>
-          <input type="file" id="fileInput" multiple accept="image/*" />
-          <span id="fileLabel">No file chosen</span>
-        </div>
 
         <div id="filters">
           <label>Year:</label>
@@ -33,23 +28,24 @@
         </div>
 
         <div id="timeSliderContainer">
-          <div id="timeDisplay">Time: 00:00</div>
-         
-          <input type="range" id="timeSlider" min="0" max="1439" step="1" value="0" /> 
+          <div id="timeDisplay">Time: 0:00</div>
+
+          <input type="range" id="timeSlider" min="0" max="1439" step="1" value="0" />
           <div class="slider-labels">
             <span>0:00</span>
             <span>23:59</span>
           </div>
         </div>
 
+        <!-- ─── NEW: Carousel wrapper ─────────────────────────────── -->
         <div id="preview">
-          <div id="imageDateTop" class="image-date"></div>
-          <img id="mainImage" src="" alt="Preview will appear here" />
-        </div>
-      </div>
+          <button id="prevBtn"  class="navBtn" aria-label="Previous">‹</button>
+          <img id="mainImage" src="preview.png" alt="Preview will appear here" />
+          <button id="nextBtn"  class="navBtn" aria-label="Next">›</button>
 
-      <div id="thumbnailSidebar">
-        <div id="thumbnailGrid"></div>
+          <button id="playBtn" class="playBtn" aria-label="Play slideshow">Play</button>
+        </div>
+        <!-- ───────────────────────────────────────────────────────── -->
       </div>
     </div>
   </div>

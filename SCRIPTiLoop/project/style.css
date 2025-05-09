@@ -51,7 +51,7 @@ body {
 
 #mainContent {
   flex: 1;
-  max-width: calc(100% - 340px);
+  max-width: 100%; /* Changed from calc(100% - 340px) */
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -59,13 +59,6 @@ body {
   padding-right: 10px;
 }
 
-#thumbnailSidebar {
-  width: 340px;
-  max-height: 100%;
-  overflow-y: auto;
-  border-left: 1px solid #ddd;
-  padding-left: 15px;
-}
 
 #uploadSection {
   display: flex;
@@ -155,26 +148,6 @@ select {
   font-size: 0.85rem;
   color: #888;
   margin-bottom: 4px;
-}
-
-#thumbnailGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  justify-items: center;
-}
-
-#thumbnailGrid img {
-  width: 90px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-}
-
-#thumbnailGrid img:hover {
-  transform: scale(1.05);
 }
 
 
