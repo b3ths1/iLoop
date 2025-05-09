@@ -28,7 +28,7 @@
         </div>
 
         <div id="timeSliderContainer">
-          <div id="timeDisplay">Time: 0:00</div>   <!-- shows 0:00 from the start -->
+          <div id="timeDisplay">Time: 0:00</div>
 
           <input type="range" id="timeSlider" min="0" max="1439" step="1" value="0" />
           <div class="slider-labels">
@@ -37,10 +37,15 @@
           </div>
         </div>
 
+        <!-- ─── NEW: Carousel wrapper ─────────────────────────────── -->
         <div id="preview">
-          <!-- <div id="imageDateTop" class="image-date"></div> -->
+          <button id="prevBtn"  class="navBtn" aria-label="Previous">‹</button>
           <img id="mainImage" src="preview.png" alt="Preview will appear here" />
+          <button id="nextBtn"  class="navBtn" aria-label="Next">›</button>
+
+          <button id="playBtn" class="playBtn" aria-label="Play slideshow">Play</button>
         </div>
+        <!-- ───────────────────────────────────────────────────────── -->
       </div>
     </div>
   </div>

@@ -6,117 +6,171 @@ const daySelect   = document.getElementById('daySelect');
 const timeSlider  = document.getElementById('timeSlider');
 const timeDisplay = document.getElementById('timeDisplay');
 const mainImage   = document.getElementById('mainImage');
-const imageDate   = document.getElementById('imageDateTop');
 
-const cache   = new Map();   // iso‑date → array of image records
-let available = [];          // list of iso‑date strings (YYYY‑MM‑DD)
+/* ─── carousel controls ─────────────────────────────────── */
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const playBtn = document.getElementById('playBtn');
 
-const defaultPreview = 'preview.png';          // <-- your default thumbnail
+let currentImgs  = [];
+let currentIndex = 0;
+let playing      = false;
+let playTimer    = null;
+/* ───────────────────────────────────────────────────────── */
+
+const cache     = new Map();  // "YYYY‑MM‑DD" → image array
+let   available = [];         // list of dates we have JSON for
+
+const defaultPreview = 'preview.png';
 mainImage.src = defaultPreview;
 
-/* ─── helpers ────────────────────────────────────────────── */
-const pad  = n => String(n).padStart(2, '0');
-const iso  = (y, m, d) => `${y}-${m}-${d}`;
-// show hours without a leading zero: 0:00, 7:05, 12:30 …
-const fmtT = mins => `${(mins / 60) | 0}:${pad(mins % 60)}`;
+/* ─── helpers ───────────────────────────────────────────── */
+const pad  = n => String(n).padStart(2,'0');
+const iso  = (y,m,d)=>`${y}-${m}-${d}`;
+const fmtT = mins => `${(mins/60)|0}:${pad(mins%60)}`;
 
-function populate(select, vals) {
+function populate(select, vals){
   select.innerHTML = '<option value="none">–</option>';
-  vals.forEach(v => {
+  vals.forEach(v=>{
     const o = document.createElement('option');
     o.value = o.textContent = v;
     select.appendChild(o);
   });
 }
 
-/* ─── load master list then build YY/MM/DD dropdowns ─────── */
+/* ─── build YEAR menu ───────────────────────────────────── */
 fetch('/daily_json/dates.json')
-  .then(r => r.json())
-  .then(dates => {
-    available = dates;                       // ["2025-05-09", ...]
-    const years  = [...new Set(dates.map(s => s.slice(0, 4)))].sort();
+  .then(r=>r.json())
+  .then(dates=>{
+    available = dates;
+    const years = [...new Set(dates.map(s=>s.slice(0,4)))].sort();
     populate(yearSelect, years);
   });
 
-/* ─── rebuild MONTH and DAY menus when year/month changes ── */
-yearSelect.addEventListener('change', () => {
+/* ─── YEAR change ───────────────────────────────────────── */
+yearSelect.addEventListener('change', ()=>{
+  stopPlaying();
+
   const y = yearSelect.value;
-  if (y === 'none') { monthSelect.innerHTML = daySelect.innerHTML = ''; return; }
+  if(y==='none'){
+    monthSelect.innerHTML = daySelect.innerHTML = '';
+    render();
+    return;
+  }
 
   const months = [...new Set(
-    available.filter(s => s.startsWith(y)).map(s => s.slice(5, 7))
+    available.filter(s=>s.startsWith(y)).map(s=>s.slice(5,7))
   )].sort();
   populate(monthSelect, months);
   daySelect.innerHTML = '';
+  render();
 });
 
-monthSelect.addEventListener('change', () => {
+/* ─── MONTH change ──────────────────────────────────────── */
+monthSelect.addEventListener('change', ()=>{
+  stopPlaying();
+
   const y = yearSelect.value, m = monthSelect.value;
-  if (m === 'none') { daySelect.innerHTML = ''; return; }
+  if(m==='none'){
+    daySelect.innerHTML = '';
+    render();
+    return;
+  }
 
   const days = available
-    .filter(s => s.startsWith(`${y}-${m}`))
-    .map(s => s.slice(8, 10))
+    .filter(s=>s.startsWith(`${y}-${m}`))
+    .map(s=>s.slice(8,10))
     .sort();
   populate(daySelect, days);
+  render();
 });
 
-/* ─── fetch JSON for the selected day (with caching) ─────── */
-function loadDay(y, m, d) {
-  const key = iso(y, m, d);
-  if (cache.has(key)) return Promise.resolve(cache.get(key));
+/* ─── DAY change  ➜  NEW!  (shows first photo) ──────────── */
+daySelect.addEventListener('change', () => {
+  stopPlaying();
+  timeSlider.value = 0;   // ensures render() picks the day’s 1st shot
+  render();
+});
+
+/* ─── fetch JSON for a day (with caching) ───────────────── */
+function loadDay(y,m,d){
+  const key = iso(y,m,d);
+  if(cache.has(key)) return Promise.resolve(cache.get(key));
 
   return fetch(`/daily_json/${key}.json`)
-    .then(r => r.json())
-    .then(arr => {
-      cache.set(key, arr);
-      return arr;
-    })
-    .catch(() => []);              // if file missing
+    .then(r=>r.json())
+    .then(arr=>{ cache.set(key,arr); return arr; })
+    .catch(()=>[]);
 }
 
-/* ─── main render logic ──────────────────────────────────── */
-function render() {
+/* ─── carousel helpers ─────────────────────────────────── */
+function showImageByIndex(i){
+  if(!currentImgs.length) return;
+  currentIndex = ((i%currentImgs.length)+currentImgs.length)%currentImgs.length;
+  const img = currentImgs[currentIndex];
+
+  mainImage.src    = img.url;
+  timeSlider.value = img.timeMinutes;
+  timeDisplay.textContent = `Time: ${fmtT(img.timeMinutes)}`;
+}
+
+function startPlaying(){
+  if(!currentImgs.length) return;
+  playing = true;
+  playBtn.textContent = 'Pause';
+  playTimer = setInterval(()=>showImageByIndex(currentIndex+1), 1000);
+}
+function stopPlaying(){
+  playing = false;
+  playBtn.textContent = 'Play';
+  clearInterval(playTimer);
+}
+
+/* ─── master render routine ─────────────────────────────── */
+function render(){
   const y = yearSelect.value,
         m = monthSelect.value,
         d = daySelect.value,
         t = +timeSlider.value;
 
-  // No full date selected → show default preview
-  if ([y, m, d].includes('none')) {
+  if([y,m,d].includes('none')){
+    currentImgs = [];
     mainImage.src = defaultPreview;
-    imageDate && (imageDate.textContent = '');
     timeDisplay.textContent = `Time: ${fmtT(t)}`;
     return;
   }
 
-  loadDay(y, m, d).then(imgs => {
-    if (!imgs.length) return;
+  loadDay(y,m,d).then(imgs=>{
+    currentImgs = imgs;
+    if(!imgs.length) return;
 
-    const exact  = imgs.filter(i => i.timeMinutes === t);
-    const chosen = exact.length
-      ? exact[0]
-      : imgs.reduce((a, b) =>
-          Math.abs(a.timeMinutes - t) < Math.abs(b.timeMinutes - t) ? a : b);
-
-    mainImage.src = chosen.url;
-    imageDate && (imageDate.textContent =
-      `${chosen.year}-${chosen.month}-${chosen.day}  ` +
-      `${chosen.hour}:${chosen.minute}`);
+    const chosen = imgs.reduce((a,b)=>
+      Math.abs(a.timeMinutes - t) < Math.abs(b.timeMinutes - t) ? a : b);
+    currentIndex = imgs.indexOf(chosen);
+    showImageByIndex(currentIndex);
   });
-
-  timeDisplay.textContent = `Time: ${fmtT(t)}`;
 }
 
-/* ─── bind events ────────────────────────────────────────── */
-[yearSelect, monthSelect, daySelect].forEach(sel =>
-  sel.addEventListener('change', render));
-timeSlider.addEventListener('input', render);
+/* ─── slider handler ────────────────────────────────────── */
+timeSlider.addEventListener('input', ()=>{
+  stopPlaying();
 
-/* ─── initial UI state ───────────────────────────────────── */
-timeSlider.max  = 1439;      // 24 h × 60 m ‑ 1
-timeSlider.value = 0;        // begin at the far‑left
+  if(currentImgs.length){
+    const nearest = currentImgs.reduce((a,b)=>
+      Math.abs(a.timeMinutes - timeSlider.value) <
+      Math.abs(b.timeMinutes - timeSlider.value) ? a : b);
+    currentIndex = currentImgs.indexOf(nearest);
+  }
+  render();
+});
+
+/* ─── carousel buttons ──────────────────────────────────── */
+prevBtn.addEventListener('click',()=>{stopPlaying();showImageByIndex(currentIndex-1)});
+nextBtn.addEventListener('click',()=>{stopPlaying();showImageByIndex(currentIndex+1)});
+playBtn.addEventListener('click',()=>playing?stopPlaying():startPlaying());
+
+/* ─── initial UI state ──────────────────────────────────── */
+timeSlider.max   = 1439;
+timeSlider.value = 0;
 timeDisplay.textContent = `Time: ${fmtT(0)}`;
-
-/* optional: draw the initial preview */
 render();
