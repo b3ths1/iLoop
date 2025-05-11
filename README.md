@@ -1,22 +1,86 @@
 # iLoop
 
-**iLoop** is a minimalist web app that helps you organize and explore photos taken at any given time of day. With iLoop, you can upload multiple images, filter them by **year, month, day**, and even browse them based on a **24-hour time slider** using the embedded **EXIF metadata**.
+**iLoop** is a lightweight, interactive timelapse viewer that displays photos based on their timestamped directory. With an intuitive filter system and smooth controls, you can browse your moments hour by hour, day by day.
 
 ---
 
-## Key Features
+## 🗂 Folder Structure
 
-* **Multiple Photo Upload**: Easily upload several images from your device.
-* **Date Filtering**: Sort your images by **Year**, **Month**, and **Day**.
-* **Time Slider**: Browse images by specific time of day (from **00:00** to **23:59**).
-* **EXIF Metadata Parsing**: Automatically reads `DateTimeOriginal` from EXIF data to extract accurate timestamps.
-* **Interactive Thumbnails**: View images in an interactive grid with hover previews and delete options.
-* **Clean User Interface**: Enjoy a sleek, responsive design inspired by Apple’s aesthetic.
-* **No Backend Required**: The app runs entirely in the browser, making it lightweight and fast.
+Organize your photos inside the `assets` folder using the following format:
+
+```
+
+assets/
+├── YYYY/
+│   ├── MM/
+│   │   ├── DD/
+│   │   │   ├── HH/
+│   │   │   │   ├── photo1_YYYY-MM-DD_HH-MM-SS.jpg
+│   │   │   │   ├── photo2_YYYY-MM-DD_HH-MM-SS.jpg
+
+````
+
+Where:
+- `YYYY` = Year (e.g., 2024)
+- `MM` = Month (e.g., 07)
+- `DD` = Day (e.g., 15)
+- `HH` = Hour in 24-hour format (e.g., 13)
 
 ---
 
-## Technologies
+## ⚙️ Setup & Usage
 
-* **HTML5**, **CSS3**, **JavaScript** – For frontend development.
-* [**EXIF.js**](https://github.com/exif-js/exif-js) – A JavaScript library for reading EXIF metadata from images.
+### 1. Add Your Images
+
+Place your timestamped images in the correct folder structure inside the `assets/` directory.
+
+### 2. Generate JSON Data
+
+Run the Python script to generate the data files:
+
+```bash
+python generate_data_json.py
+````
+
+> This will create a `data.json` file for **each day**, used by the webpage to load the images.
+
+---
+
+## 🌐 How It Works
+
+Open the `index.html` file in your browser. You'll see:
+
+### 🔎 Filters
+
+* **Year**
+* **Month**
+* **Day**
+
+These determine the folder path to load your images.
+
+### 🕒 Time Slider
+
+Use the slider to view photos by **hour** of the day. It creates a smooth **timelapse** effect.
+
+### 🎮 Controls
+
+* ⬅️ ➡️ : Navigate photos manually using left/right arrow buttons.
+* ▶️ ⏸️ : Start/stop the **auto-play mode** to cycle through images like a slideshow.
+
+---
+
+## ✅ Requirements
+
+* Python 3.x (for running the script)
+* A modern browser (Chrome, Firefox, Edge, etc.)
+
+---
+
+## 📌 Notes
+
+* Be sure to re-run `generate_data_json.py` every time you add new images.
+* Images must follow the strict folder structure or they won’t be detected.
+
+---
+
+## 🚀 Enjoy your timelapse journey with iLoop!
