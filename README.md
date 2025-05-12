@@ -25,7 +25,7 @@ Where:
 - `MM` = Month (e.g., 07)
 - `DD` = Day (e.g., 15)
 - `HH` = Hour in 24-hour format (e.g., 13)
-
+Note: You must delete the .txt file inside the folder to avoid any errors.
 ---
 
 ## ⚙️ Setup & Usage
