@@ -39,7 +39,7 @@ function populate(select, vals){
 }
 
 /* ─── build YEAR menu ───────────────────────────────────── */
-fetch('/daily_json/dates.json')
+fetch('./daily_json/dates.json')
   .then(r=>r.json())
   .then(dates=>{
     available = dates;
@@ -97,7 +97,7 @@ function loadDay(y,m,d){
   const key = iso(y,m,d);
   if(cache.has(key)) return Promise.resolve(cache.get(key));
 
-  return fetch(`/daily_json/${key}.json`)
+  return fetch(`./daily_json/${key}.json`)
     .then(r=>r.json())
     .then(arr=>{ cache.set(key,arr); return arr; })
     .catch(()=>[]);
